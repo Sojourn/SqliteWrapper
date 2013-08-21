@@ -19,9 +19,9 @@ namespace sqlite
 		bool Init(std::shared_ptr<ConnectionPrivate> connection, const std::string &sql);
 		virtual ~StatementPrivate();
 		
-		virtual bool Step(Row **row) = 0;
-		virtual bool Reset() = 0;
-		virtual bool ClearBindings() = 0;
+		virtual bool Step(Row **row) override;
+		virtual bool Reset() override;
+		virtual bool ClearBindings() override;
 
 	private:
 		RowPrivate _row;

@@ -7,7 +7,7 @@
 
 namespace sqlite
 {
-	class ConnectionPrivate : public Connection
+	class ConnectionPrivate : public Connection, public std::enable_shared_from_this<ConnectionPrivate>
 	{
 	public:
 		ConnectionPrivate();

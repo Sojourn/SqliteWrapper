@@ -24,8 +24,7 @@ namespace sqlite
 		};
 
 		virtual size_t ColumnCount() const = 0;
-		virtual ValueType_t ColumnType(size_t index) const = 0;
-		
+		virtual bool ColumnType(size_t index, ValueType_t *type) const = 0;
 		virtual bool GetNull(const size_t index, nullptr_t *value) const = 0;
 		virtual bool GetInteger(const size_t index, int64_t *value) const = 0;
 		virtual bool GetFloat(const size_t index, double *value) const = 0;

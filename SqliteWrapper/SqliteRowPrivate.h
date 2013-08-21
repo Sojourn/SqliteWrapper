@@ -13,8 +13,7 @@ namespace sqlite
 		bool Init(sqlite3_stmt *statement);
 
 		virtual size_t ColumnCount() const override;
-		virtual ValueType_t ColumnType(size_t index) const override;
-		
+		virtual bool ColumnType(size_t index, ValueType_t *type) const override;
 		virtual bool GetNull(const size_t index, nullptr_t *value) const override;
 		virtual bool GetInteger(const size_t index, int64_t *value) const override;
 		virtual bool GetFloat(const size_t index, double *value) const override;

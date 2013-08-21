@@ -1,6 +1,7 @@
 #include "SqliteConnection.h"
 #include "SqliteConnectionPrivate.h"
 #include "SqliteStatement.h"
+#include "SqliteStatementPrivate.h"
 #include "SqliteRow.h"
 #include "sqlite3.h"
 
@@ -50,23 +51,36 @@ bool sqlite::ConnectionPrivate::Init(const std::string &filename, const OpenFlag
 sqlite::Connection::~Connection() {}
 sqlite::ConnectionPrivate::~ConnectionPrivate()
 {
-	sqlite3_close(_database);
+	if(_database != nullptr)
+		sqlite3_close(_database);
 	_database = nullptr;
 }
 
 bool sqlite::ConnectionPrivate::Exec(const std::string &sql)
 {
-	return false;
+	int ret = sqlite3_exec(_database, sql.c_str(), nullptr, nullptr, nullptr);
+	return ret == SQLITE_OK;
+}
+
+static int ExecCallback(void *closure, int argc, char **argv, char **colv)
+{
+	auto callback = reinterpret_cast<std::function<bool (int,char**,char**)> *>(closure);
+	return (*callback)(argc, argv, colv) ? SQLITE_OK : SQLITE_ABORT;
 }
 
 bool sqlite::ConnectionPrivate::Exec(const std::string &sql, std::function<bool (int,char**,char**)> callback)
 {
-	return false;
+	int ret = sqlite3_exec(_database, sql.c_str(), ExecCallback, &callback, nullptr);
+	return ret == SQLITE_OK;
 }
 
 std::unique_ptr<sqlite::Statement> sqlite::ConnectionPrivate::Prepare(const std::string &sql)
 {
-	return nullptr;
+	auto statement = std::unique_ptr<sqlite::StatementPrivate>(new sqlite::StatementPrivate);
+	if(statement->Init(shared_from_this(), sql))
+		return std::move(statement);
+	else
+		return nullptr;
 }
 
 sqlite::ConnectionPrivate::operator sqlite3*()

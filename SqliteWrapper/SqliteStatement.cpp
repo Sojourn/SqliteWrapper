@@ -1,5 +1,6 @@
 #include "SqliteStatement.h"
 #include "SqliteStatementPrivate.h"
+#include "sqlite3.h"
 
 sqlite::Statement::Statement() {}
 sqlite::StatementPrivate::StatementPrivate() :
@@ -10,7 +11,8 @@ sqlite::StatementPrivate::StatementPrivate() :
 
 bool sqlite::StatementPrivate::Init(std::shared_ptr<ConnectionPrivate> connection, const std::string &sql)
 {
-	return false;
+	int ret = sqlite3_prepare_v2(*connection, sql.c_str(), sql.length(), &_statement, nullptr);
+	return (ret == SQLITE_OK) ? _row.Init(_statement) : false;
 }
 
 sqlite::Statement::~Statement() {}
@@ -22,15 +24,20 @@ sqlite::StatementPrivate::~StatementPrivate()
 
 bool sqlite::StatementPrivate::Step(Row **row)
 {
-	return false;
+	int ret = sqlite3_step(_statement);
+
+	*row = (ret == SQLITE_ROW) ? &_row : nullptr;
+	return ret == SQLITE_ROW;
 }
 
 bool sqlite::StatementPrivate::Reset()
 {
-	return false;
+	int ret = sqlite3_reset(_statement);
+	return ret == SQLITE_OK;
 }
 
 bool sqlite::StatementPrivate::ClearBindings()
 {
-	return false;
+	int ret = sqlite3_clear_bindings(_statement);
+	return ret == SQLITE_OK;
 }
