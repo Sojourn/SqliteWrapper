@@ -1,6 +1,12 @@
 #ifndef SQLITE_COMMON_H
 #define SQLITE_COMMON_H
 
+#include <string>
+#include <vector>
+#include <memory>
+#include <functional>
+#include <cstdint>
+
 namespace sqlite
 {
 	class NoCopy

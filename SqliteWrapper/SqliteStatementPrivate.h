@@ -23,6 +23,16 @@ namespace sqlite
 		virtual bool Reset() override;
 		virtual bool ClearBindings() override;
 
+		virtual bool BindParameterName(const size_t index, std::string *name) const override;
+		virtual bool BindParameterIndex(const std::string &name, size_t *index) const override;
+		virtual size_t BindParameterCount() const override;
+
+		virtual bool BindNull(const size_t index, const nullptr_t &value) override;
+		virtual bool BindInteger(const size_t index, const int64_t &value) override;
+		virtual bool BindFloat(const size_t index, const double &value) override;
+		virtual bool BindText(const size_t index, const std::string &value) override;
+		virtual bool BindBlob(const size_t index, const std::vector<uint8_t> &value) override;
+
 	private:
 		RowPrivate _row;
 		sqlite3_stmt *_statement;

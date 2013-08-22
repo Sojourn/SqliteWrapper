@@ -25,7 +25,7 @@ size_t sqlite::RowPrivate::ColumnCount() const
 	return sqlite3_column_count(_statement);
 }
 
-bool sqlite::RowPrivate::ColumnType(size_t index, ValueType_t *type) const
+bool sqlite::RowPrivate::ColumnType(const size_t index, ValueType_t *type) const
 {
 	if(index < ColumnCount())
 	{
@@ -83,13 +83,14 @@ bool sqlite::RowPrivate::GetFloat(const size_t index, double *value) const
 
 bool sqlite::RowPrivate::GetText(const size_t index, std::string *value) const
 {
-	value->clear();
-
 	if(index < ColumnCount())
 	{
 		const size_t length = sqlite3_column_bytes(_statement, index);
 		if(length == 0)
+		{
+			value->clear();
 			return true;
+		}
 
 		const char *text = reinterpret_cast<const char*>(
 			sqlite3_column_text(_statement, index));
@@ -100,18 +101,21 @@ bool sqlite::RowPrivate::GetText(const size_t index, std::string *value) const
 	}
 	else
 	{
+		value->clear();
 		return false;
 	}
 }
 
 bool sqlite::RowPrivate::GetBlob(const size_t index, std::vector<uint8_t> *value) const
 {
-	value->clear();
 	if(index < ColumnCount())
 	{
 		const size_t length = sqlite3_column_bytes(_statement, index);
 		if(length == 0)
+		{
+			value->clear();
 			return true;
+		}
 
 		const uint8_t *blob = reinterpret_cast<const uint8_t*>(
 			sqlite3_column_blob(_statement, index));
@@ -122,7 +126,7 @@ bool sqlite::RowPrivate::GetBlob(const size_t index, std::vector<uint8_t> *value
 	}
 	else
 	{
+		value->clear();
+		return false;
 	}
-
-	return false;
 }
